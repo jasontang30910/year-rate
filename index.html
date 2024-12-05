@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>币价与比值图表</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-annotation"></script>  <!-- 引入插件 -->
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            margin: 0;
+            padding: 0;
+            text-align: center;
+        }
+        h1 {
+            color: #333;
+            margin-top: 20px;
+        }
+        .chart-container {
+            width: 100%;
+            max-width: 600px;
+            margin: 20px auto;
+        }
+        .latest-price {
+            font-size: 16px;
+            margin-top: 10px;
+            color: #333;
+        }
+        .row {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 20px;
+        }
+        .chart-box {
+            flex: 1 1 300px;
+            max-width: 600px;
+            min-width: 250px;
+            margin-bottom: 30px;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>币价与比值图表</h1>
+
+    <div class="row">
+        <div class="chart-box">
+            <canvas id="chart_BTC_USDT"></canvas>
+            <div id="latest_BTC_USDT" class="latest-price"></div>
+        </div>
+        <div class="chart-box">
+            <canvas id="chart_ETH_USDT"></canvas>
+            <div id="latest_ETH_USDT" class="latest-price"></div>
+        </div>
+    </div>
+
+        <div class="row">
+        <div class="chart-box">
+            <canvas id="chart_ARB_USDT"></canvas>
+            <div id="latest_ARB_USDT" class="latest-price"></div>
+        </div>
+        <div class="chart-box">
+            <canvas id="chart_CRV_USDT"></canvas>
+            <div id="latest_CRV_USDT" class="latest-price"></div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="chart-box">
+            <canvas id="chart_AAVE_USDT"></canvas>
+            <div id="latest_AAVE_USDT" class="latest-price"></div>
+        </div>
+        <div class="chart-box">
+            <canvas id="chart_UNI_USDT"></canvas>
+            <div id="latest_UNI_USDT" class="latest-price"></div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="chart-box">
+            <canvas id="chart_ETH_BTC"></canvas>
+            <div id="latest_ETH_BTC" class="latest-price"></div>
+        </div>
+        <div class="chart-box">
+            <canvas id="chart_UNI_AAVE"></canvas>
+            <div id="latest_UNI_AAVE" class="latest-price"></div>
+        </div>
+
+    </div> <div class="row">
+        <div class="chart-box">
+            <canvas id="chart_COMP_UNI"></canvas>
+            <div id="latest_COMP_UNI" class="latest-price"></div>
+        </div>
+        <div class="chart-box">
+            <canvas id="chart_COMP_AAVE"></canvas>
+            <div id="latest_COMP_AAVE" class="latest-price"></div>
+        </div>
+    </div>
+
+
+    <script>
+        // 格式化数字，保留5位有效数字
+        function formatPrice(price) {
+            return parseFloat(price).toPrecision(5);  // 保留5位有效数字
+        }
+
+        // 获取K线数据
+        async function fetchKlineData(symbol) {
+            const url = `https://api.binance.com/api/v1/klines?symbol=${symbol}&interval=1d&limit=1000`;
+            const response = await fetch(url);
+            const data = await response.json();
+            return data;
+        }
+
+        // 处理并绘制K线图
+        async function renderKlineChart(symbol, chartId, latestPriceId) {
+            const klineData = await fetchKlineData(symbol);
+
+            // 提取日期和收盘价
+            const labels = klineData.map(item => {
+                const date = new Date(item[0]);
+                return `${date.getMonth() + 1}-${date.getDate()} ${date.getHours()}:${date.getMinutes()}`;
+            });
+
+            const closeData = klineData.map(item => formatPrice(item[4])); // 收盘价
+
+            // 获取最新收盘价和时间
+            const latestData = klineData[klineData.length - 1];
+            const latestClosePrice = formatPrice(latestData[4]);
+            const latestTime = new Date(latestData[0]).toLocaleString('zh-CN', { hour: '2-digit', minute: '2-digit' });
+
+            // 更新最新收盘价和时间
+            document.getElementById(latestPriceId).innerHTML = `${symbol} 最新: ${latestClosePrice} (${latestTime})`;
+
+            // 使用Chart.js绘制K线图
+            const ctx = document.getElementById(chartId).getContext('2d');
+            new Chart(ctx, {
+                type: 'line',  // 线图类型
+                data: {
+                    labels: labels,
+                    datasets: [
+                        {
+                            label: '收盘价',
+                            borderColor: 'orange',
+                            data: closeData,
+                            fill: false,
+                            tension: 0.3,  // 平滑曲线
+                            pointRadius: 1,  // 调整点的大小
+                            borderWidth: 1  // 调整线的宽度
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        x: {
+                            ticks: {
+                                maxRotation: 45,
+                                minRotation: 45
+                            }
+                        },
+                        y: {
+                            ticks: {
+                                beginAtZero: false
+                            }
+                        }
+                    },
+                    plugins: {
+                        annotation: {
+                            annotations: [
+                                {
+                                    type: 'line',
+                                    mode: 'horizontal',
+                                    scaleID: 'y',
+                                    value: closeData[closeData.length - 1],  // 最新价格
+                                    borderColor: 'red',
+                                    borderWidth: 1,
+                                    borderDash: [5, 5],  // 虚线
+                                    label: {
+                                        content: `最新价: ${closeData[closeData.length - 1]}`,
+                                        enabled: true,
+                                        position: 'right'
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            });
+        }
+
+        // 获取比值数据并绘制图表
+        async function renderRatioChart(symbol1, symbol2, chartId, latestPriceId, label) {
+            const data1 = await fetchKlineData(symbol1);
+            const data2 = await fetchKlineData(symbol2);
+
+            const labels = data1.map(item => {
+                const date = new Date(item[0]);
+                return `${date.getMonth() + 1}-${date.getDate()} ${date.getHours()}:${date.getMinutes()}`;
+            });
+
+            // 计算比值
+            const ratioData = data1.map((item, index) => {
+                const price1 = parseFloat(item[4]);
+                const price2 = parseFloat(data2[index][4]);
+                return formatPrice(price1 / price2);  // 计算比值，保留5位有效数字
+            });
+
+            // 获取最新比值和时间
+            const latestData1 = data1[data1.length - 1];
+            const latestData2 = data2[data2.length - 1];
+            const latestRatio = formatPrice(latestData1[4] / latestData2[4]);
+            const latestTime = new Date(latestData1[0]).toLocaleString('zh-CN', { hour: '2-digit', minute: '2-digit' });
+
+            // 更新最新比值和时间
+            document.getElementById(latestPriceId).innerHTML = `${label} 最新: ${latestRatio} (${latestTime})`;
+
+            // 使用Chart.js绘制比值图
+            const ctx = document.getElementById(chartId).getContext('2d');
+            new Chart(ctx, {
+                type: 'line',  // 线图类型
+                data: {
+                    labels: labels,
+                    datasets: [
+                        {
+                            label: label,
+                            borderColor: 'green',
+                            data: ratioData,
+                            fill: false,
+                            tension: 0.3,  // 平滑曲线
+                            pointRadius: 1,  // 调整点的大小
+                            borderWidth: 1  // 调整线的宽度
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        x: {
+                            ticks: {
+                                maxRotation: 45,
+                                minRotation: 45
+                            }
+                        },
+                        y: {
+                            ticks: {
+                                beginAtZero: false
+                            }
+                        }
+                    },
+                    plugins: {
+                        annotation: {
+                            annotations: [
+                                {
+                                    type: 'line',
+                                    mode: 'horizontal',
+                                    scaleID: 'y',
+                                    value: ratioData[ratioData.length - 1],  // 最新比值
+                                    borderColor: 'red',
+                                    borderWidth: 1,
+                                    borderDash: [5, 5],  // 虚线
+                                    label: {
+                                        content: `最新比值: ${ratioData[ratioData.length - 1]}`,
+                                        enabled: true,
+                                        position: 'right'
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            });
+        }
+
+        // 执行渲染图表
+        renderKlineChart('BTCUSDT', 'chart_BTC_USDT', 'latest_BTC_USDT');
+        renderKlineChart('ETHUSDT', 'chart_ETH_USDT', 'latest_ETH_USDT');
+        renderKlineChart('ARBUSDT', 'chart_ARB_USDT', 'latest_ARB_USDT');
+        renderKlineChart('CRVUSDT', 'chart_CRV_USDT', 'latest_CRV_USDT');
+        renderKlineChart('AAVEUSDT', 'chart_AAVE_USDT', 'latest_AAVE_USDT');
+        renderKlineChart('UNIUSDT', 'chart_UNI_USDT', 'latest_UNI_USDT');
+        renderRatioChart('ETHUSDT', 'BTCUSDT', 'chart_ETH_BTC', 'latest_ETH_BTC', 'ETH/BTC');
+        renderRatioChart('UNIUSDT', 'AAVEUSDT', 'chart_UNI_AAVE', 'latest_UNI_AAVE', 'UNI/AAVE');
+         renderRatioChart('COMPUSDT', 'UNIUSDT', 'chart_COMP_UNI', 'latest_COMP_UNI', 'COMP/UNI');
+        renderRatioChart('COMPUSDT', 'AAVEUSDT', 'chart_COMP_AAVE', 'latest_COMP_AAVE', 'COMP_AAVE');
+    </script>
+</body>
+</html>
