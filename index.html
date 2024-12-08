@@ -59,23 +59,23 @@
 
         <div class="row">
         <div class="chart-box">
-            <canvas id="chart_ARB_USDT"></canvas>
-            <div id="latest_ARB_USDT" class="latest-price"></div>
+            <canvas id="chart_ARB_OP"></canvas>
+            <div id="latest_ARB_OP" class="latest-price"></div>
         </div>
         <div class="chart-box">
-            <canvas id="chart_CRV_USDT"></canvas>
-            <div id="latest_CRV_USDT" class="latest-price"></div>
+            <canvas id="chart_CRV_UNI"></canvas>
+            <div id="latest_CRV_UNI" class="latest-price"></div>
         </div>
     </div>
 
     <div class="row">
         <div class="chart-box">
-            <canvas id="chart_AAVE_USDT"></canvas>
-            <div id="latest_AAVE_USDT" class="latest-price"></div>
+            <canvas id="chart_AAVE_ETH"></canvas>
+            <div id="latest_AAVE_ETH" class="latest-price"></div>
         </div>
         <div class="chart-box">
-            <canvas id="chart_UNI_USDT"></canvas>
-            <div id="latest_UNI_USDT" class="latest-price"></div>
+            <canvas id="chart_UNI_ETH"></canvas>
+            <div id="latest_UNI_ETH" class="latest-price"></div>
         </div>
     </div>
 
@@ -278,13 +278,13 @@
         // 执行渲染图表
         renderKlineChart('BTCUSDT', 'chart_BTC_USDT', 'latest_BTC_USDT');
         renderKlineChart('ETHUSDT', 'chart_ETH_USDT', 'latest_ETH_USDT');
-        renderKlineChart('ARBUSDT', 'chart_ARB_USDT', 'latest_ARB_USDT');
-        renderKlineChart('CRVUSDT', 'chart_CRV_USDT', 'latest_CRV_USDT');
-        renderKlineChart('AAVEUSDT', 'chart_AAVE_USDT', 'latest_AAVE_USDT');
-        renderKlineChart('UNIUSDT', 'chart_UNI_USDT', 'latest_UNI_USDT');
+        renderRatioChart('ARBUSDT', 'OPUSDT', 'chart_ARB_OP', 'latest_ARB_OP', 'ARB/OP');
+        renderRatioChart('CRVUSDT', 'UNIUSDT', 'chart_CRV_UNI', 'latest_CRV_UNI', 'CRV/UNI');
+        renderRatioChart('AAVEUSDT', 'ETHUSDT', 'chart_AAVE_ETH', 'latest_AAVE_ETH', 'AAVE/ETH');
+        renderRatioChart('UNIUSDT', 'ETHUSDT', 'chart_UNI_ETH', 'latest_UNI_ETH', 'UNI/ETH');
         renderRatioChart('ETHUSDT', 'BTCUSDT', 'chart_ETH_BTC', 'latest_ETH_BTC', 'ETH/BTC');
         renderRatioChart('UNIUSDT', 'AAVEUSDT', 'chart_UNI_AAVE', 'latest_UNI_AAVE', 'UNI/AAVE');
-         renderRatioChart('COMPUSDT', 'UNIUSDT', 'chart_COMP_UNI', 'latest_COMP_UNI', 'COMP/UNI');
+        renderRatioChart('COMPUSDT', 'UNIUSDT', 'chart_COMP_UNI', 'latest_COMP_UNI', 'COMP/UNI');
         renderRatioChart('COMPUSDT', 'AAVEUSDT', 'chart_COMP_AAVE', 'latest_COMP_AAVE', 'COMP_AAVE');
     </script>
 </body>
