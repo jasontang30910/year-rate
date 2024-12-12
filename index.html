@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>year币价与比值图表</title>
+    <title>币价与比值图表</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-annotation"></script>  <!-- 引入插件 -->
     <style>
@@ -99,7 +99,28 @@
             <div id="latest_COMP_AAVE" class="latest-price"></div>
         </div>
     </div>
-
+    
+    </div> <div class="row">
+        <div class="chart-box">
+            <canvas id="chart_LINK_UNI"></canvas>
+            <div id="latest_LINK_UNI" class="latest-price"></div>
+        </div>
+        <div class="chart-box">
+            <canvas id="chart_LINK_AAVE"></canvas>
+            <div id="latest_LINK_AAVE" class="latest-price"></div>
+        </div>
+    </div>
+    
+    </div> <div class="row">
+        <div class="chart-box">
+            <canvas id="chart_1INCH_CRV"></canvas>
+            <div id="latest_1INCH_CRV" class="latest-price"></div>
+        </div>
+        <div class="chart-box">
+            <canvas id="chart_1INCH_UNI"></canvas>
+            <div id="latest_1INCH_UNI" class="latest-price"></div>
+        </div>
+    </div>
 
     <script>
         // 格式化数字，保留5位有效数字
@@ -286,6 +307,10 @@
         renderRatioChart('UNIUSDT', 'AAVEUSDT', 'chart_UNI_AAVE', 'latest_UNI_AAVE', 'UNI/AAVE');
         renderRatioChart('COMPUSDT', 'UNIUSDT', 'chart_COMP_UNI', 'latest_COMP_UNI', 'COMP/UNI');
         renderRatioChart('COMPUSDT', 'AAVEUSDT', 'chart_COMP_AAVE', 'latest_COMP_AAVE', 'COMP_AAVE');
+        renderRatioChart('LINKUSDT', 'UNIUSDT', 'chart_LINK_UNI', 'latest_LINK_UNI', 'LINK/UNI');
+        renderRatioChart('LINKUSDT', 'AAVEUSDT', 'chart_LINK_AAVE', 'latest_LINK_AAVE', 'LINK_AAVE');
+        //renderRatioChart('1INCHUSDT', 'CRVUSDT', 'chart_1INCH_CRV', 'latest_1INCH_CRV', '1INCH/CRV');
+        //renderRatioChart('1INCHUSDT', 'UNIUSDT', 'chart_1INCH_UNI', 'latest_1INCH_UNI', '1INCH_UNI');
     </script>
 </body>
 </html>
